@@ -1,1 +1,6 @@
 First time using git as a workflow. Using github to get used to it and comforable to pushing commits. ...etc
+can the board object use a pause method?
+Can turn-left and turn-right methods be moved to the snake_link object? Assume default state of object is to always be moving.
+The turn methods (or method?) will instantaneously change the direction of the current node, queue the instruction, then pass to the next node after
+a time delay calculated from the node size and speed... it might be simpler to use the node as the basis of measurment and accept the
+"rachety" tetris like movement of a more primitive game
