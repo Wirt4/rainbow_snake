@@ -1,11 +1,13 @@
 require 'gosu'
 
 class Node
-  def initialize
-    @image = Gosu::Image.new("PNG/yellow_panel.png")
+  def initialize(letter)
+    @x = @y = 0
+    @image = Gosu::Image.from_text(letter, 12) #much better
+    # would like to read the opening lines from 'Through the Looking Glass' to build the snake.
   end
   def draw(x, y)
-    @image.draw(x, y, 1) # diverging from tutorial here
+    @image.draw_rot(x, y, 1, 0) # diverging from tutorial here
   end
   end
   #public members
@@ -21,6 +23,25 @@ class Food < Node
 end
 
 class Link < Node
+  def initialize( letter, x_vel, y_vel)
+    super(letter)
+    @x_vel=x_vel
+    @y_vel=y_vel
+  end
+  def turn(dir) # -1 for left, +1 for right
+    if @x_vel==0
+      @x_vel = dir*@y_vel
+      @y_vel =0
+    else
+      @y_vel = -1*dir*@x_vel
+      @x_vel=0
+    end
+  end
+  def move
+    @x += @x_vel
+    @y += @y_vel
+
+  end
   # this is the Node extension that MOVES
   # public members:
   # next = a null or Link Object
@@ -30,7 +51,7 @@ class Link < Node
   # method: addLink
   # if next is null, creates a new link node there
   # else, calls the addLink method for Link.next
-  end
+end
 class Snake
   #initialize ()
   # creates a Link object and sets it as HEAD
@@ -44,18 +65,19 @@ class Snake
   # public boolean: hit?
   # if the head of the snake collides with the wall of the board or a snake link.
   # is a construct that is comprised of Link objects
-  end
+end
 class Board < Gosu::Window
   def initialize
     super 640, 480
-    @node = Node.new
+    @node = Link.new('O', 30, 1,)
     self.caption = "Space Train"
   end
-  def update
-  end
   def draw
-    @node.draw(0,0)
-    end
+    @node.draw(320, 240)
+  end
+  def update
+    @node.move
+  end
   # method: initialize(x width, y width)
   # creates the board size based on size parameters
   # creates a SNAKE object and FOOD object
@@ -63,7 +85,7 @@ class Board < Gosu::Window
   # changes game state from menu screen to play
   # method: Reset
   # changes game state from play to menu screen, method is called in event of a collision
-  end
+end
 class Game
   #initializes the board object
   # will call the methods for the board and snake object based on user input
