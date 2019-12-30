@@ -1,6 +1,13 @@
 require 'gosu'
 
 class Node
+  def initialize
+    @image = Gosu::Image.new("PNG/yellow_panel.png")
+  end
+  def draw(x, y)
+    @image.draw(x, y, 1) # diverging from tutorial here
+  end
+  end
   #public members
   # x pos (int)
   # y pos (int)
@@ -8,8 +15,6 @@ class Node
   # y bound (int)
   # boolean nodeCollision?
 
-
-  end
 class Food < Node
   # method: Respawn()
   # finds a new coordinates for food inside the x and y bound
@@ -43,12 +48,13 @@ class Snake
 class Board < Gosu::Window
   def initialize
     super 640, 480
-
+    @node = Node.new
     self.caption = "Space Train"
   end
   def update
   end
   def draw
+    @node.draw(0,0)
     end
   # method: initialize(x width, y width)
   # creates the board size based on size parameters
