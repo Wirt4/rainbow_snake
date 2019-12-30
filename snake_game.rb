@@ -1,13 +1,49 @@
 require 'gosu'
 
-class Node
-  def initialize(letter)
-    @x = @y = 0
+class Player
+  def initialize(letter, vel_x, vel_y)
     @image = Gosu::Image.from_text(letter, 12) #much better
+    @x = @y = @vel_x = @vel_y = @angle = 0
+    @vel_x = vel_x
+    @vel_y = vel_y
     # would like to read the opening lines from 'Through the Looking Glass' to build the snake.
   end
-  def draw(x, y)
-    @image.draw_rot(x, y, 1, 0) # diverging from tutorial here
+  def warp(x, y)
+    @x, @y = x, y
+  end
+  def turn(dir)
+    if @vel_x==0
+      @x_vel = dir * @y_vel
+      @y_vel = 0
+    else
+      @y_vel = -1 * dir * @x_vel
+      @x_vel = 0
+    end
+  end
+  def turn_left
+    @angle -= 4.5
+  end
+  def turn_right
+    @angle += 4.5
+  end
+  def accelerate
+    @vel_x += Gosu.offset_x(@angle, 0.5)
+    @vel_y += Gosu.offset_y(@angle, 0.5)
+  end
+
+  def move
+    @x += @vel_x
+    @y += @vel_y
+    @x %= 640
+    @y %= 480
+
+    #below we have a deceleration thingy
+    #  @vel_x *= 0.95
+    # @vel_y *= 0.95
+  end
+
+  def draw()
+    @image.draw_rot(@x, @y, 1, @angle) # diverging from tutorial here
   end
   end
   #public members
@@ -17,67 +53,42 @@ class Node
   # y bound (int)
   # boolean nodeCollision?
 
-class Food < Node
-  # method: Respawn()
-  # finds a new coordinates for food inside the x and y bound
-end
 
-class Link < Node
-  def initialize( letter, x_vel, y_vel)
-    super(letter)
-    @x_vel=x_vel
-    @y_vel=y_vel
-  end
-  def turn(dir) # -1 for left, +1 for right
-    if @x_vel==0
-      @x_vel = dir*@y_vel
-      @y_vel =0
-    else
-      @y_vel = -1*dir*@x_vel
-      @x_vel=0
-    end
-  end
-  def move
-    @x += @x_vel
-    @y += @y_vel
-
-  end
-  # this is the Node extension that MOVES
-  # public members:
-  # next = a null or Link Object
-  # method: move(direction)
-  # instructs the node to move one node's length: N S E W
-  # if has a next link, then passes direction to that link after a delay
-  # method: addLink
-  # if next is null, creates a new link node there
-  # else, calls the addLink method for Link.next
-end
-class Snake
-  #initialize ()
-  # creates a Link object and sets it as HEAD
-  #public members
-  # HEAD (snake link)
-
-  # method: turn_left
-  # method: turn_right
-  # public boolean: eat?
-  # if the head of the snake collides with food
-  # public boolean: hit?
-  # if the head of the snake collides with the wall of the board or a snake link.
-  # is a construct that is comprised of Link objects
-end
 class Board < Gosu::Window
   def initialize
     super 640, 480
-    @node = Link.new('O', 30, 1,)
-    self.caption = "Space Train"
-  end
-  def draw
-    @node.draw(320, 240)
+    @player = Player.new('A')
+    @player.warp(320, 240) # note the relationhip between this and board size
+    self.caption = "Word Snake"
   end
   def update
-    @node.move
+    if Gosu.button_down? Gosu::KB_LEFT or Gosu.button_down? Gosu::GP_LEFT
+      # @player.turn_left
+      @player.turn(-1)
+    end
+    if Gosu.button_down? Gosu::KB_RIGHT or Gosu.button_down? Gosu::GP_RIGHT
+      #@player.turn_right
+       @player.turn(1)
+    end
+    if Gosu.button_down? Gosu::KB_UP or Gosu.button_down? Gosu::GP_BUTTON_0
+      @player.accelerate
+    end
+    @player.move
   end
+  def draw
+    @player.draw()
+  end
+
+  #keep this snippet : very handy
+  def button_down(id)
+    if id == Gosu::KB_ESCAPE
+      close
+    else
+      super
+      end
+    end
+  end
+
   # method: initialize(x width, y width)
   # creates the board size based on size parameters
   # creates a SNAKE object and FOOD object
@@ -85,12 +96,7 @@ class Board < Gosu::Window
   # changes game state from menu screen to play
   # method: Reset
   # changes game state from play to menu screen, method is called in event of a collision
-end
-class Game
-  #initializes the board object
-  # will call the methods for the board and snake object based on user input
-  # is the interface
-end
+
 
 Board.new.show
 
