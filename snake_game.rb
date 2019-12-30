@@ -1,3 +1,5 @@
+require 'gosu'
+
 class Node
   #public members
   # x pos (int)
@@ -38,7 +40,16 @@ class Snake
   # if the head of the snake collides with the wall of the board or a snake link.
   # is a construct that is comprised of Link objects
   end
-class Board
+class Board < Gosu::Window
+  def initialize
+    super 640, 480
+
+    self.caption = "Space Train"
+  end
+  def update
+  end
+  def draw
+    end
   # method: initialize(x width, y width)
   # creates the board size based on size parameters
   # creates a SNAKE object and FOOD object
@@ -47,9 +58,11 @@ class Board
   # method: Reset
   # changes game state from play to menu screen, method is called in event of a collision
   end
-end
 class Game
   #initializes the board object
   # will call the methods for the board and snake object based on user input
   # is the interface
 end
+
+Board.new.show
+
