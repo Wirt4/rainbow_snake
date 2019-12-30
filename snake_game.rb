@@ -1,31 +1,45 @@
 require 'gosu'
 
 class Player
-  def initialize(letter, vel_x, vel_y)
-    @image = Gosu::Image.from_text(letter, 12) #much better
+  def initialize(letter, vel)
+    @image = Gosu::Image.from_text(letter, 16) #much better
     @x = @y = @vel_x = @vel_y = @angle = 0
-    @vel_x = vel_x
-    @vel_y = vel_y
+    @vel = vel
     # would like to read the opening lines from 'Through the Looking Glass' to build the snake.
   end
   def warp(x, y)
     @x, @y = x, y
   end
-  def turn(dir)
+
+  def turn_left
     if @vel_x==0
-      @x_vel = dir * @y_vel
-      @y_vel = 0
-    else
-      @y_vel = -1 * dir * @x_vel
-      @x_vel = 0
+      @vel_x =  @vel
+      @vel_y = 0
     end
   end
-  def turn_left
-    @angle -= 4.5
-  end
+ 
   def turn_right
-    @angle += 4.5
+    # @angle += 4.5
+    if @vel_x == 0
+      @vel_x = -@vel
+      @vel_y = 0
+    end
   end
+
+  def turn_up
+    if @vel_y == 0
+      @vel_y = @vel
+      @vel_x = 0
+    end
+  end
+
+  def turn_down
+    if @vel_y == 0
+      @vel_y = -@vel
+      @vel_x = 0
+    end
+  end
+
   def accelerate
     @vel_x += Gosu.offset_x(@angle, 0.5)
     @vel_y += Gosu.offset_y(@angle, 0.5)
@@ -45,7 +59,7 @@ class Player
   def draw()
     @image.draw_rot(@x, @y, 1, @angle) # diverging from tutorial here
   end
-  end
+end
   #public members
   # x pos (int)
   # y pos (int)
@@ -57,22 +71,26 @@ class Player
 class Board < Gosu::Window
   def initialize
     super 640, 480
-    @player = Player.new('A')
+    @player = Player.new('A', -3)
     @player.warp(320, 240) # note the relationhip between this and board size
     self.caption = "Word Snake"
   end
   def update
     if Gosu.button_down? Gosu::KB_LEFT or Gosu.button_down? Gosu::GP_LEFT
-      # @player.turn_left
-      @player.turn(-1)
+       @player.turn_left
+
     end
     if Gosu.button_down? Gosu::KB_RIGHT or Gosu.button_down? Gosu::GP_RIGHT
-      #@player.turn_right
-       @player.turn(1)
+      @player.turn_right
     end
-    if Gosu.button_down? Gosu::KB_UP or Gosu.button_down? Gosu::GP_BUTTON_0
-      @player.accelerate
+
+    if Gosu.button_down? Gosu::KB_DOWN or Gosu.button_down? Gosu::GP_DOWN
+      @player.turn_down
     end
+     if Gosu.button_down? Gosu::KB_UP or Gosu.button_down? Gosu::GP_BUTTON_0
+    #   @player.accelerate
+       @player.turn_up
+     end
     @player.move
   end
   def draw
