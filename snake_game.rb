@@ -2,6 +2,8 @@ require 'ruby2d'
 set background: 'yellow' #like the idea of yellow bg and fuchsia squares
 set fps_cap: 12
 GRID_SIZE = 20
+GRID_WIDTH = Window.width/GRID_SIZE
+GRID_HEIGHT = Window.height/GRID_SIZE
 #window is 640 by 480
 # so grid is 32 by 24
 class Snake
@@ -29,18 +31,23 @@ class Snake
     @position.shift
     case @direction
     when 'down'
-      @position.push([head[0], head[1]+1])
+      @position.push(new_cords(head[0], head[1]+1))
     when 'up'
-      @position.push([head[0], head[1]-1])
+      @position.push(new_cords(head[0], head[1]-1))
     when 'left'
-      @position.push([head[0] - 1, head[1]])
+      @position.push(new_cords(head[0] - 1, head[1]))
     when 'right'
-      @position.push([head[0] + 1, head[1]])
+      @position.push(new_cords(head[0] + 1, head[1]))
     end
   end
 
   def head
     @position.last
+  end
+
+  private
+  def new_cords(x,y) #this is infinite pac - man space, will want to amend this
+    [x % GRID_WIDTH, y % GRID_HEIGHT]
   end
 end
 
