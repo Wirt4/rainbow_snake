@@ -8,3 +8,5 @@ a time delay calculated from the node size and speed... it might be simpler to u
 Will want to figure out font size in pixels... This is a tile-based game
 
 12/31 - currently working off https://www.youtube.com/watch?v=2UVhYHBT_1o tutorial
+
+opting not for outlines to get a smoother look for snake
