@@ -2,13 +2,19 @@ require 'gosu'
 
 class Player
   def initialize(letter, vel)
-    @image = Gosu::Image.from_text(letter, 16) #much better
-    @x = @y = @vel_x = @vel_y = @angle = 0
+    @image = Gosu::Image.from_text(letter, 16) #much better?
+    @cord_x = @cord_y = @vel_x = @vel_y = @angle = 0
     @vel = vel
     # would like to read the opening lines from 'Through the Looking Glass' to build the snake.
   end
+  def get_x_cord
+    @cord_x
+  end
+  def get_y_cord
+    @cord_y
+  end
   def warp(x, y)
-    @x, @y = x, y
+    @cord_x, @cord_y = x, y
   end
 
   def turn_left
@@ -46,10 +52,10 @@ class Player
   end
 
   def move
-    @x += @vel_x
-    @y += @vel_y
-    @x %= 640
-    @y %= 480
+    @cord_x += @vel_x
+    @cord_y += @vel_y
+    @cord_x %= 640
+    @cord_y %= 480
 
     #below we have a deceleration thingy
     #  @vel_x *= 0.95
@@ -57,7 +63,7 @@ class Player
   end
 
   def draw()
-    @image.draw_rot(@x, @y, 1, @angle) # diverging from tutorial here
+    @image.draw_rot(@cord_x, @cord_y, 1, @angle) # diverging from tutorial here
   end
 end
   #public members
@@ -72,8 +78,9 @@ class Board < Gosu::Window
   def initialize
     super 640, 480
     @player = Player.new('A', -3)
-    @player.warp(320, 240) # note the relationhip between this and board size
+    @player.warp(320, 480) # note the relationship between this and board size
     self.caption = "Word Snake"
+    @font = Gosu::Font.new(20)
   end
   def update
     if Gosu.button_down? Gosu::KB_LEFT or Gosu.button_down? Gosu::GP_LEFT
@@ -88,13 +95,14 @@ class Board < Gosu::Window
       @player.turn_down
     end
      if Gosu.button_down? Gosu::KB_UP or Gosu.button_down? Gosu::GP_BUTTON_0
-    #   @player.accelerate
        @player.turn_up
      end
+    #if player exceeds boundaries, put back in center
     @player.move
   end
   def draw
     @player.draw()
+    @font.draw_text("cords: #{@player.get_x_cord}, #{@player.get_y_cord}", 10, 10, 2, 1.0, 1.0, Gosu::Color::YELLOW)
   end
 
   #keep this snippet : very handy
@@ -104,7 +112,8 @@ class Board < Gosu::Window
     else
       super
       end
-    end
+  end
+
   end
 
   # method: initialize(x width, y width)

@@ -4,3 +4,5 @@ Can turn-left and turn-right methods be moved to the snake_link object? Assume d
 The turn methods (or method?) will instantaneously change the direction of the current node, queue the instruction, then pass to the next node after
 a time delay calculated from the node size and speed... it might be simpler to use the node as the basis of measurment and accept the
 "rachety" tetris like movement of a more primitive game
+
+Will want to figure out font size in pixels... This is a tile-based game
