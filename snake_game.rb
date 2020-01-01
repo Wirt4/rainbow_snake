@@ -60,7 +60,7 @@ class Snake
   end
 
   def collision? #collision detection is not working as expected
-    @position.uniq.length == @position.length
+    false
   end
 
   private
