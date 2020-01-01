@@ -81,7 +81,7 @@ class Game
       Square.new(x: @food_x* GRID_SIZE, y: @food_y * GRID_SIZE, size: GRID_SIZE, color: 'fuchsia')
     end
     if finished?
-      msg = 'Whoopise, dead snake.'
+      msg = 'Whoopise, dead snake. Press R to play again.'
     else
       msg = "Score: #{@score}"
     end
@@ -144,8 +144,7 @@ on :key_down do |event|
     when 'down'
       snake.set_dir('right')
     end
-  end
-  if  event.key == 'right'
+  elsif  event.key == 'right'
     case snake.get_dir
     when 'right'
       snake.set_dir('down')
@@ -156,6 +155,9 @@ on :key_down do |event|
     when 'down'
       snake.set_dir('left')
     end
+  elsif event.key == 'r'
+    snake = Snake.new
+    game = Game.new
   end
 end
 show
