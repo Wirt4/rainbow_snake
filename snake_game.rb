@@ -10,7 +10,7 @@ class Snake
   attr_writer :direction
 
   def initialize
-    @position = [[16, 21], [16, 22], [16, 23]]
+    @position = [[16, 23], [16, 22], [16, 21]]
     @direction = 'up'
     @growing = false
   end
@@ -32,13 +32,13 @@ class Snake
     end
     case @direction
     when 'down'
-      @position.push(new_cords(head[0], head[1]+1))
+      @position.push([head[0], head[1]+1])
     when 'up'
-      @position.push(new_cords(head[0], head[1]-1))
+      @position.push([head[0], head[1]-1])
     when 'left'
-      @position.push(new_cords(head[0] - 1, head[1]))
+      @position.push([head[0] - 1, head[1]])
     when 'right'
-      @position.push(new_cords(head[0] + 1, head[1]))
+      @position.push([head[0] + 1, head[1]])
     end
     @growing = false
   end
@@ -60,7 +60,7 @@ class Snake
   end
 
   def collision? #collision detection is not working as expected
-    false
+    (@position.uniq.length != @position.length) && (head[0]>=0&&head[0]<=GRID_WIDTH&&head[1]>=0&&head[1]<=GRID_HEIGHT)
   end
 
   private
@@ -110,6 +110,7 @@ update do
   clear
   snake.move #unless game.finished?
   snake.draw
+
   game.draw
 
   if game.snake_eat_food?(snake.x, snake.y)
