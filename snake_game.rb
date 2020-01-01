@@ -32,13 +32,13 @@ class Snake
     end
     case @direction
     when 'down'
-      @position.push([head[0], head[1]+1])
+      @position.push(new_cords(head[0], head[1]+1))
     when 'up'
-      @position.push([head[0], head[1]-1])
+      @position.push(new_cords(head[0], head[1]-1))
     when 'left'
-      @position.push([head[0] - 1, head[1]])
+      @position.push(new_cords(head[0] - 1, head[1]))
     when 'right'
-      @position.push([head[0] + 1, head[1]])
+      @position.push(new_cords(head[0] + 1, head[1]))
     end
     @growing = false
   end
@@ -60,7 +60,7 @@ class Snake
   end
 
   def collision? #collision detection is not working as expected
-    (@position.uniq.length != @position.length) && (head[0]>=0&&head[0]<=GRID_WIDTH&&head[1]>=0&&head[1]<=GRID_HEIGHT)
+    (@position.uniq.length != @position.length)
   end
 
   private
@@ -79,8 +79,13 @@ class Game
   def draw
     unless finished?
       Square.new(x: @food_x* GRID_SIZE, y: @food_y * GRID_SIZE, size: GRID_SIZE, color: 'fuchsia')
-      end
-    Text.new("Score: #{@score}", color: 'black', x: 10, y: 10, size: 25)
+    end
+    if finished?
+      msg = 'Whoopise, dead snake.'
+    else
+      msg = "Score: #{@score}"
+    end
+    Text.new(msg, color: 'black', x: 10, y: 10, size: 25)
   end
 
   def snake_eat_food?(x, y)
@@ -108,7 +113,7 @@ snake.draw
 update do
   #the cycle
   clear
-  snake.move #unless game.finished?
+  snake.move unless game.finished?
   snake.draw
 
   game.draw
