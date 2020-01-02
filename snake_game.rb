@@ -1,12 +1,14 @@
 require 'ruby2d'
-set background: 'yellow' #like the idea of yellow bg and fuchsia squares
+set background: 'black' #like the idea of yellow bg and fuchsia squares
 set fps_cap: 12
 GRID_SIZE = 20
 GRID_WIDTH = Window.width/GRID_SIZE
 GRID_HEIGHT = Window.height/GRID_SIZE
+NODE_SIZE = GRID_SIZE - 1
 #window is 640 by 480
 # so grid is 32 by 24
 class Snake
+
   attr_writer :direction
 
   def initialize
@@ -17,7 +19,7 @@ class Snake
 
   def draw
     @position.each do |pos|
-      Square.new(x: pos[0] * GRID_SIZE, y: pos[1] * GRID_SIZE, size: GRID_SIZE, color: 'maroon')
+      Square.new(x: pos[0] * GRID_SIZE, y: pos[1] * GRID_SIZE, size: NODE_SIZE, color: 'yellow')
     end
   end
   def get_dir
@@ -41,6 +43,10 @@ class Snake
       @position.push(new_cords(head[0] + 1, head[1]))
     end
     @growing = false
+  end
+
+  def get_pos
+    @position
   end
 
   def head
@@ -75,27 +81,32 @@ class Game
     @food_x = rand(GRID_WIDTH) # may want a second method to spawn food to not to interfere with snake
     @food_y = rand(GRID_HEIGHT)
     @finished = false
+    @colors = ['blue', 'aqua', 'teal', 'olive', 'green', 'lime', 'yellow', 'orange', 'red', 'fuchsia', 'silver']
   end
   def draw
     unless finished?
-      Square.new(x: @food_x* GRID_SIZE, y: @food_y * GRID_SIZE, size: GRID_SIZE, color: 'fuchsia')
+      Square.new(x: @food_x* GRID_SIZE, y: @food_y * GRID_SIZE, size: NODE_SIZE, color: @colors.sample())
     end
     if finished?
       msg = 'Whoopise, dead snake. Press R to play again.'
     else
       msg = "Score: #{@score}"
     end
-    Text.new(msg, color: 'black', x: 10, y: 10, size: 25)
+    Text.new(msg, color: 'white', x: 10, y: 10, size: 25)
   end
 
   def snake_eat_food?(x, y)
     @food_x == x && @food_y == y
   end
 
-  def record_hit
+  def record_hit(pos)
     @score +=1
     @food_x = rand(GRID_WIDTH)
     @food_y = rand(GRID_HEIGHT)
+    while pos.include?([@food_x, @food_y])
+      @food_x = rand(GRID_WIDTH)
+      @food_y = rand(GRID_HEIGHT)
+    end
   end
 
   def finish
@@ -119,7 +130,7 @@ update do
   game.draw
 
   if game.snake_eat_food?(snake.x, snake.y)
-    game.record_hit
+    game.record_hit(snake.get_pos)
     snake.grow
   end
 
