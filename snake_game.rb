@@ -5,6 +5,7 @@ GRID_SIZE = 20
 GRID_WIDTH = Window.width/GRID_SIZE
 GRID_HEIGHT = Window.height/GRID_SIZE
 NODE_SIZE = GRID_SIZE - 1
+COLORS = ['blue', 'aqua', 'teal', 'olive', 'green', 'lime', 'yellow', 'orange', 'red', 'fuchsia', 'silver']
 #window is 640 by 480
 # so grid is 32 by 24
 class Snake
@@ -15,11 +16,17 @@ class Snake
     @position = [[16, 23], [16, 22], [16, 21]]
     @direction = 'up'
     @growing = false
+    @snake_colors = []
+    for num in 1..3 do
+      @snake_colors.push(COLORS.sample)
+    end
   end
 
   def draw
+    num = @position.length - 1
     @position.each do |pos|
-      Square.new(x: pos[0] * GRID_SIZE, y: pos[1] * GRID_SIZE, size: NODE_SIZE, color: 'yellow')
+      Square.new(x: pos[0] * GRID_SIZE, y: pos[1] * GRID_SIZE, size: NODE_SIZE, color: @snake_colors[num])
+      num -= 1
     end
   end
   def get_dir
@@ -61,7 +68,8 @@ class Snake
     head[1]
   end
 
-  def grow
+  def grow(color)
+    @snake_colors.push(color)
     @growing = true
   end
 
@@ -81,11 +89,11 @@ class Game
     @food_x = rand(GRID_WIDTH) # may want a second method to spawn food to not to interfere with snake
     @food_y = rand(GRID_HEIGHT)
     @finished = false
-    @colors = ['blue', 'aqua', 'teal', 'olive', 'green', 'lime', 'yellow', 'orange', 'red', 'fuchsia', 'silver']
+    @food_color = COLORS.sample
   end
   def draw
     unless finished?
-      Square.new(x: @food_x* GRID_SIZE, y: @food_y * GRID_SIZE, size: NODE_SIZE, color: @colors.sample())
+      Square.new(x: @food_x* GRID_SIZE, y: @food_y * GRID_SIZE, size: NODE_SIZE, color: @food_color)
     end
     if finished?
       msg = 'Whoopise, dead snake. Press R to play again.'
@@ -98,9 +106,12 @@ class Game
   def snake_eat_food?(x, y)
     @food_x == x && @food_y == y
   end
-
+  def get_food_color
+    @food_color
+  end
   def record_hit(pos)
     @score +=1
+    @food_color = COLORS.sample
     @food_x = rand(GRID_WIDTH)
     @food_y = rand(GRID_HEIGHT)
     while pos.include?([@food_x, @food_y])
@@ -131,7 +142,7 @@ update do
 
   if game.snake_eat_food?(snake.x, snake.y)
     game.record_hit(snake.get_pos)
-    snake.grow
+    snake.grow(game.get_food_color)
   end
 
   if snake.collision?
