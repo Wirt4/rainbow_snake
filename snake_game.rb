@@ -5,7 +5,7 @@ GRID_SIZE = 20
 GRID_WIDTH = Window.width/GRID_SIZE
 GRID_HEIGHT = Window.height/GRID_SIZE
 NODE_SIZE = GRID_SIZE - 1
-COLORS = ['blue', 'aqua', 'teal', 'olive', 'green', 'lime', 'yellow', 'orange', 'red', 'fuchsia', 'silver']
+COLORS = ['gray', 'yellow', 'orange', 'red', 'fuchsia', 'silver']
 #window is 640 by 480
 # so grid is 32 by 24
 class Snake
@@ -41,13 +41,13 @@ class Snake
     end
     case @direction
     when 'down'
-      @position.push(new_cords(head[0], head[1]+1))
+      @position.push([head[0], head[1]+1])
     when 'up'
-      @position.push(new_cords(head[0], head[1]-1))
+      @position.push([head[0], head[1]-1])
     when 'left'
-      @position.push(new_cords(head[0] - 1, head[1]))
+      @position.push([head[0] - 1, head[1]])
     when 'right'
-      @position.push(new_cords(head[0] + 1, head[1]))
+      @position.push([head[0] + 1, head[1]])
     end
     @growing = false
   end
@@ -77,10 +77,6 @@ class Snake
     (@position.uniq.length != @position.length)
   end
 
-  private
-  def new_cords(x,y) #this is infinite pac - man space, will want to amend this
-    [x % GRID_WIDTH, y % GRID_HEIGHT]
-  end
 end
 
 class Game
@@ -145,7 +141,7 @@ update do
     snake.grow(game.get_food_color)
   end
 
-  if snake.collision?
+  if snake.collision? || snake.head[0] < 0 || snake.head[1] < 0 || snake.head[0] == GRID_WIDTH || snake.head[1] == GRID_HEIGHT
     game.finish
   end
 end
