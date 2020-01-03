@@ -86,19 +86,28 @@ class Game
     @food_y = rand(GRID_HEIGHT)
     @finished = false
     @food_color = COLORS.sample
+    @menu = true
   end
   def draw
-    unless finished?
+    unless finished? or menu?
       Square.new(x: @food_x* GRID_SIZE, y: @food_y * GRID_SIZE, size: NODE_SIZE, color: @food_color)
     end
     if finished?
-      msg = 'Whoopise, dead snake. Press R to play again.'
+      msg = 'Dead snake. Press RETURN to play again.'
     else
       msg = "Score: #{@score}"
     end
+    Text.new(msg, color: 'black', x: 11, y: 11, size: 25)
     Text.new(msg, color: 'white', x: 10, y: 10, size: 25)
+    if menu?
+      hue = COLORS.sample
+      Text.new('SNAKE RAINBOW', color: hue, x: 10, y: 40, size: 72)
+      Text.new('press SPACE to play', color: 'white', x: 160, y: 160, size: 35)
+    end
   end
-
+  def remove_menu
+    @menu = false
+  end
   def snake_eat_food?(x, y)
     @food_x == x && @food_y == y
   end
@@ -118,19 +127,21 @@ class Game
   def finish
     @finished = true
   end
-
+  def menu?
+    @menu
+  end
   def finished?
     @finished
   end
 end
 
-snake = Snake.new
 game = Game.new
+snake = Snake.new
 snake.draw
 update do
   #the cycle
   clear
-  snake.move unless game.finished?
+  snake.move unless game.finished? or game.menu?
   snake.draw
 
   game.draw
@@ -146,24 +157,15 @@ update do
 end
 
 on :key_down do |event|
-  if  event.key == 'left' && snake.get_dir != 'right'
-      snake.set_dir('left')
-    end
-  if  event.key == 'right' && snake.get_dir != 'left'
-      snake.set_dir('right')
-  end
-  if  event.key == 'up' && snake.get_dir != 'down'
-    snake.set_dir('up')
-  end
-  if  event.key == 'down' && snake.get_dir != 'up'
-    snake.set_dir('down')
-  end
-  if event.key == 'r'
+  snake.set_dir('left') if event.key == 'left' && snake.get_dir != 'right'
+  snake.set_dir('right') if event.key =='right'&& snake.get_dir != 'left'
+  snake.set_dir('up') if event.key == 'up' && snake.get_dir != 'down'
+  snake.set_dir ('down') if event.key == 'down' && snake.get_dir != 'up'
+  if event.key == 'return'
     snake = Snake.new
     game = Game.new
   end
-  if event.key == 'escape'
-    close
-  end
+  close if event.key == 'escape'
+  game.remove_menu if event.key = 'space'
 end
 show
