@@ -115,7 +115,6 @@ class Game
       @food_y = rand(GRID_HEIGHT)
     end
   end
-
   def finish
     @finished = true
   end
@@ -137,8 +136,8 @@ update do
   game.draw
 
   if game.snake_eat_food?(snake.x, snake.y)
-    game.record_hit(snake.get_pos)
     snake.grow(game.get_food_color)
+    game.record_hit(snake.get_pos)
   end
 
   if snake.collision? || snake.head[0] < 0 || snake.head[1] < 0 || snake.head[0] == GRID_WIDTH || snake.head[1] == GRID_HEIGHT
@@ -147,35 +146,24 @@ update do
 end
 
 on :key_down do |event|
-  #will want to re-write the logic here to make snake work on just two keys, left and right
-  # if ['up', 'down', 'left','right'].include?(event.key)
-  #  snake.direction = event.key
-  # end
-  if  event.key == 'left'
-    case snake.get_dir
-    when 'right'
-      snake.set_dir('up')
-    when 'up'
-      snake.set_dir('left')
-    when 'left'
-      snake.set_dir('down')
-    when 'down'
-      snake.set_dir('right')
-    end
-  elsif  event.key == 'right'
-    case snake.get_dir
-    when 'right'
-      snake.set_dir('down')
-    when 'up'
-      snake.set_dir('right')
-    when 'left'
-      snake.set_dir('up')
-    when 'down'
+  if  event.key == 'left' && snake.get_dir != 'right'
       snake.set_dir('left')
     end
-  elsif event.key == 'r'
+  if  event.key == 'right' && snake.get_dir != 'left'
+      snake.set_dir('right')
+  end
+  if  event.key == 'up' && snake.get_dir != 'down'
+    snake.set_dir('up')
+  end
+  if  event.key == 'down' && snake.get_dir != 'up'
+    snake.set_dir('down')
+  end
+  if event.key == 'r'
     snake = Snake.new
     game = Game.new
+  end
+  if event.key == 'escape'
+    close
   end
 end
 show
