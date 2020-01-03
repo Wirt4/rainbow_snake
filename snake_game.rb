@@ -1,44 +1,44 @@
 require 'ruby2d'
 set background: 'black' #like the idea of yellow bg and fuchsia squares
-set fps_cap: 12
+set fps_cap: 15
+set title: 'Rainbow Snake'
 GRID_SIZE = 20
 GRID_WIDTH = Window.width/GRID_SIZE
 GRID_HEIGHT = Window.height/GRID_SIZE
-NODE_SIZE = GRID_SIZE - 1
-COLORS = ['gray', 'yellow', 'orange', 'red', 'fuchsia', 'silver']
+NODE_SIZE = GRID_SIZE - 2
+COLORS = ['yellow', 'aqua','orange', 'red', 'fuchsia', 'silver']
 #window is 640 by 480
 # so grid is 32 by 24
 class Snake
 
-  attr_writer :direction
+  attr_writer :new_direction
 
   def initialize
-    @position = [[16, 23], [16, 22], [16, 21]]
+    #starting position and heading of snake is the same every time
+    @position = [[16, 22], [16, 21], [16, 20]]
     @direction = 'up'
     @growing = false
-    @snake_colors = []
-    for num in 1..3 do
-      @snake_colors.push(COLORS.sample)
-    end
+    @snake_colors = ['white', 'yellow', 'red'] #starter colors to make best impression to new players
   end
 
   def draw
+    #iterate backwards through snake to re-draw and append colors in the correct order
     num = @position.length - 1
     @position.each do |pos|
       Square.new(x: pos[0] * GRID_SIZE, y: pos[1] * GRID_SIZE, size: NODE_SIZE, color: @snake_colors[num])
       num -= 1
     end
   end
-  def get_dir
+
+  def direction
     @direction
   end
-  def set_dir(dir)
+
+  def new_direction(dir)
     @direction = dir
   end
   def move
-    unless @growing
-      @position.shift
-    end
+    @position.shift unless @growing
     case @direction
     when 'down'
       @position.push([head[0], head[1]+1])
@@ -78,7 +78,7 @@ class Snake
   end
 
 end
-
+#the game class, tracks score and displays feedback for player
 class Game
   def initialize
     @score = 0
@@ -101,7 +101,7 @@ class Game
     Text.new(msg, color: 'white', x: 10, y: 10, size: 25)
     if menu?
       hue = COLORS.sample
-      Text.new('SNAKE RAINBOW', color: hue, x: 10, y: 40, size: 72)
+      Text.new('RAINBOW SNAKE', color: hue, x: 10, y: 40, size: 72)
       Text.new('press SPACE to play', color: 'white', x: 160, y: 160, size: 35)
     end
   end
@@ -143,7 +143,6 @@ update do
   clear
   snake.move unless game.finished? or game.menu?
   snake.draw
-
   game.draw
 
   if game.snake_eat_food?(snake.x, snake.y)
@@ -157,10 +156,10 @@ update do
 end
 
 on :key_down do |event|
-  snake.set_dir('left') if event.key == 'left' && snake.get_dir != 'right'
-  snake.set_dir('right') if event.key =='right'&& snake.get_dir != 'left'
-  snake.set_dir('up') if event.key == 'up' && snake.get_dir != 'down'
-  snake.set_dir ('down') if event.key == 'down' && snake.get_dir != 'up'
+  snake.new_direction('left') if event.key == 'left' && snake.direction != 'right'
+  snake.new_direction('right') if event.key =='right'&& snake.direction != 'left'
+  snake.new_direction('up') if event.key == 'up' && snake.direction != 'down'
+  snake.new_direction ('down') if event.key == 'down' && snake.direction != 'up'
   if event.key == 'return'
     snake = Snake.new
     game = Game.new
